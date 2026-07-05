@@ -227,3 +227,116 @@ select {
   background: rgba(185, 163, 111, 0.2);
   border-radius: 2px;
 }
+
+/* ====== 动态效果 ====== */
+
+/* 太极慢速旋转 */
+@keyframes taiji-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.taiji-spin {
+  animation: taiji-spin 16s linear infinite;
+}
+.taiji-spin:hover {
+  animation-duration: 6s;
+}
+
+/* 加载页太极旋转变慢 */
+.taiji-spin-slow {
+  animation: taiji-spin 20s linear infinite;
+}
+
+/* 卦象环独立反向旋转 */
+@keyframes bagua-ring-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+.bagua-ring {
+  animation: bagua-ring-spin 40s linear infinite;
+}
+
+/* 流光扫描 */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+/* 脉冲光晕 */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+/* 金线描边动画 */
+@keyframes gold-draw {
+  from { stroke-dashoffset: 1000; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* 毛玻璃强化卡片 */
+.glow-card {
+  position: relative;
+  overflow: hidden;
+}
+.glow-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(201, 168, 76, 0.04) 0%,
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 2;
+}
+.glow-card:hover::before {
+  opacity: 1;
+}
+
+/* 金线角标装饰 */
+.gold-corner {
+  position: relative;
+}
+.gold-corner::before,
+.gold-corner::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-color: rgba(201, 168, 76, 0.25);
+  border-style: solid;
+}
+.gold-corner::before {
+  top: 0;
+  left: 0;
+  border-width: 1px 0 0 1px;
+}
+.gold-corner::after {
+  bottom: 0;
+  right: 0;
+  border-width: 0 1px 1px 0;
+}
+
+/* 仪式感关键帧 */
+@keyframes ritual-fade-in {
+  0% { opacity: 0; transform: translateY(10px) scale(0.98); filter: blur(2px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+/* 行内金线装饰 */
+.gold-inline {
+  display: inline-block;
+  width: 24px;
+  height: 1px;
+  background: rgba(201, 168, 76, 0.3);
+  vertical-align: middle;
+  margin: 0 8px;
+}

@@ -7,6 +7,7 @@ import BaziResultCard from "@/components/BaziResultCard";
 import BaziChart from "@/components/BaziChart";
 import ReportSection from "@/components/ReportSection";
 import PaywallOverlay from "@/components/PaywallOverlay";
+import { AnimatedSection } from "@/components/AnimatedSection";
 import type { BaziResult } from "@/types/bazi";
 import { calculateTenGod } from "@/lib/bazi/ten-gods";
 import { saveBaziRecord } from "@/lib/storage";
@@ -192,6 +193,7 @@ export default function BaziResultPage() {
       </div>
 
       {/* 神煞 */}
+      <AnimatedSection delay={100}>
       <div className="bazi-card mt-6 rounded-xl p-5">
         <h3 className="mb-3 text-sm font-medium text-rice-50">神煞</h3>
         {result.shenSha && result.shenSha.length > 0 ? (
@@ -217,10 +219,16 @@ export default function BaziResultPage() {
           <p className="text-sm text-rice-100/50">命局中无明显神煞显现。</p>
         )}
       </div>
+      </AnimatedSection>
 
       {/* 分析报告 */}
-      <div className="bazi-card mt-6 rounded-xl p-5">
-        <h3 className="mb-4 text-sm font-medium text-rice-50">命理分析</h3>
+      <AnimatedSection>
+        <div className="bazi-card mt-6 rounded-xl p-5">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gold-400/20 to-transparent" />
+          <h3 className="text-xs font-medium text-gold-400/60 tracking-[0.15em]">命理分析</h3>
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gold-400/20 to-transparent" />
+        </div>
 
         {/* 核心格局 */}
         <ReportSection title="核心格局" tag="格局">
@@ -294,6 +302,7 @@ export default function BaziResultPage() {
           <p>{result.health}</p>
         </ReportSection>
       </div>
+      </AnimatedSection>
 
       {/* 付费解锁 */}
       {isPaid ? (

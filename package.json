@@ -10,6 +10,7 @@
     "setup:prices": "node scripts/setup-stripe-prices.js"
   },
   "dependencies": {
+    "framer-motion": "^12.42.2",
     "next": "^15.3.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
