@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import TaijiBagua from "./TaijiBagua";
+import MysticBaguaOrb from "./MysticBaguaOrb";
 import { AnimatedSection } from "./AnimatedSection";
 
 export function HomeClientBagua() {
   return (
     <div className="flex items-center justify-center">
-      <TaijiBagua size={320} />
+      <MysticBaguaOrb size={380} />
     </div>
   );
 }
@@ -43,7 +43,7 @@ export function HomeClientEntryCards() {
         <AnimatedSection key={entry.href} delay={i * 120}>
           <Link
             href={entry.href}
-            className="entry-card glow-card rounded-xl p-5 block"
+            className="entry-card glow-card rounded-xl p-5 block group"
           >
             <p className="text-[10px] text-gold-400/50 tracking-[0.15em] mb-2">
               {entry.tag}

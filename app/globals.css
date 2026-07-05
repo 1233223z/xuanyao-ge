@@ -340,3 +340,46 @@ select {
   vertical-align: middle;
   margin: 0 8px;
 }
+
+/* ====== MysticBaguaOrb 动画 ====== */
+
+/* 外圈八卦盘整体顺时针旋转（40秒一圈） */
+@keyframes bagua-outer-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.bagua-outer-spin {
+  animation: bagua-outer-spin 40s linear infinite;
+}
+.bagua-outer-spin:hover {
+  animation-duration: 20s;
+}
+
+/* 中心太极逆时针旋转（抵消外圈，视觉上基本不动，微微反向） */
+@keyframes taiji-inner-spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(-360deg); }
+}
+.taiji-inner-spin {
+  animation: taiji-inner-spin 80s linear infinite;
+}
+
+/* 外圈呼吸光效 */
+@keyframes bagua-glow-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+.bagua-outer-glow {
+  animation: bagua-glow-pulse 4s ease-in-out infinite;
+}
+.bagua-outer-spin:hover .bagua-outer-glow {
+  animation-duration: 2s;
+}
+
+/* 卦象符号悬停微动 */
+.bagua-symbol {
+  transition: fill 0.4s ease;
+}
+.bagua-outer-spin:hover .bagua-symbol {
+  fill: rgba(201, 168, 76, 0.8) !important;
+}
