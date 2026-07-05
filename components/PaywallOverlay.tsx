@@ -2,27 +2,22 @@
 
 import { useState } from "react";
 import PaymentModal from "./PaymentModal";
+import type { ProductId } from "@/lib/payment";
 
 type Props = {
-  onUnlock?: () => void;
   price?: number;
   title?: string;
   features?: string[];
-  productType?: "bazi_report" | "liuyao_report";
+  productId?: ProductId;
 };
 
 export default function PaywallOverlay({
-  onUnlock,
   price = 9.9,
   title = "解锁完整报告",
   features,
-  productType
+  productId = "bazi_report",
 }: Props) {
   const [showPayment, setShowPayment] = useState(false);
-
-  function handleSuccess() {
-    if (onUnlock) onUnlock();
-  }
 
   return (
     <>
@@ -59,7 +54,7 @@ export default function PaywallOverlay({
       <PaymentModal
         isOpen={showPayment}
         onClose={() => setShowPayment(false)}
-        onSuccess={handleSuccess}
+        productId={productId}
         title={title}
         price={price}
       />

@@ -62,7 +62,6 @@ export default function BaziDetailPage() {
 
       <div className="mt-8">
         <PaywallOverlay
-          onUnlock={() => alert("支付功能开发中，敬请期待！")}
           price={19.9}
           title="解锁完整详批"
           features={[

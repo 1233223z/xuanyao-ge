@@ -67,7 +67,6 @@ export default function CaiyunPage() {
           </ReportSection>
 
           <PaywallOverlay
-            onUnlock={() => alert("支付功能开发中，敬请期待！")}
             price={9.9}
             title="解锁财运事业深度分析"
             features={["财星格局详细分析", "适合的行业与职业方向", "未来五年财运时间线", "投资与创业建议"]}

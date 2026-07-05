@@ -62,7 +62,6 @@ export default function JiankangPage() {
           </ReportSection>
 
           <PaywallOverlay
-            onUnlock={() => alert("支付功能开发中，敬请期待！")}
             price={9.9}
             title="解锁健康深度分析"
             features={["五行体质详细分析", "易感事项提前预防", "饮食作息调理建议", "大运流年对健康的影响"]}

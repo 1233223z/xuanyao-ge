@@ -63,7 +63,6 @@ export default function GanqingPage() {
           </ReportSection>
 
           <PaywallOverlay
-            onUnlock={() => alert("支付功能开发中，敬请期待！")}
             price={9.9}
             title="解锁感情深度分析"
             features={["正缘特征判断", "未来五年感情时间线", "相处模式与注意事项", "桃花星与人际关系分析"]}

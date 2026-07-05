@@ -233,7 +233,7 @@ export default function BaziResultPage() {
       {/* 付费解锁 */}
       {showPaywall ? (
         <div className="mt-6">
-          <PaywallOverlay onUnlock={() => alert("支付功能开发中，敬请期待！")} />
+          <PaywallOverlay />
         </div>
       ) : (
         <div className="mt-6 text-center">
