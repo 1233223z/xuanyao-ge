@@ -157,3 +157,68 @@ export function markProductUnlocked(productId: ProductId): void {
 export function getSiteUrl(): string {
   return process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 }
+
+// ---------- 报告持久化（localStorage 兜底） ----------
+
+const REPORT_DATA_PREFIX = "xuanyao-report-data-";
+const PAID_REPORTS_KEY = "xuanyao-paid-reports";
+
+/** 支付前保存报告数据，供支付成功页找回 */
+export function saveReportData(reportId: string, data: unknown): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(REPORT_DATA_PREFIX + reportId, JSON.stringify(data));
+  } catch (e) {
+    console.error("保存报告数据失败:", e);
+  }
+}
+
+/** 根据 reportId 取回报告数据 */
+export function getReportData(reportId: string): unknown | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(REPORT_DATA_PREFIX + reportId);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** 标记某个 reportId 已支付 */
+export function markReportPaid(reportId: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    const raw = localStorage.getItem(PAID_REPORTS_KEY);
+    const list: string[] = raw ? JSON.parse(raw) : [];
+    if (!list.includes(reportId)) {
+      list.push(reportId);
+      localStorage.setItem(PAID_REPORTS_KEY, JSON.stringify(list));
+    }
+  } catch (e) {
+    console.error("标记已支付报告失败:", e);
+  }
+}
+
+/** 检查某个 reportId 是否已支付 */
+export function isReportPaid(reportId: string): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const raw = localStorage.getItem(PAID_REPORTS_KEY);
+    if (!raw) return false;
+    const list: string[] = JSON.parse(raw);
+    return list.includes(reportId);
+  } catch {
+    return false;
+  }
+}
+
+/** 获取所有已支付的 reportId 列表 */
+export function getPaidReportIds(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(PAID_REPORTS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}

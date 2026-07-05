@@ -11,24 +11,60 @@ import type { BaziResult } from "@/types/bazi";
 import { calculateTenGod } from "@/lib/bazi/ten-gods";
 import { saveBaziRecord } from "@/lib/storage";
 import { fourPillarsShort } from "@/lib/bazi";
+import { getReportData, isReportPaid } from "@/lib/payment";
 
 export default function BaziResultPage() {
   const router = useRouter();
   const [result, setResult] = useState<BaziResult | null>(null);
   const [showPaywall, setShowPaywall] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [notFound, setNotFound] = useState(false);
+  const [isPaid, setIsPaid] = useState(false);
 
   useEffect(() => {
+    // 从 URL 读取参数（不用 useSearchParams 以避免 Suspense boundary）
+    const params = new URLSearchParams(window.location.search);
+    const idFromUrl = params.get("id");
+    const paidFromUrl = params.get("paid") === "true";
+
     try {
       const stored = sessionStorage.getItem("baziResult");
       if (stored) {
-        setResult(JSON.parse(stored));
+        const data = JSON.parse(stored);
+        setResult(data);
+        // 如果已支付过，自动解锁
+        if (isReportPaid(data.id)) {
+          setSaved(true);
+          setIsPaid(true);
+        }
+        return;
+      }
+
+      // sessionStorage 中没有 — 尝试从 localStorage 按 id 找回
+      if (idFromUrl) {
+        const localData = getReportData(idFromUrl);
+        if (localData) {
+          setResult(localData as BaziResult);
+          const paid = isReportPaid(idFromUrl);
+          if (paid) setIsPaid(true);
+          return;
+        }
+
+        // 检查是否支付过但数据丢失
+        if (paidFromUrl || isReportPaid(idFromUrl)) {
+          setNotFound(true);
+          return;
+        }
+      }
+
+      // 什么也没有 — 回退到输入页
+      router.replace("/bazi");
+    } catch {
+      if (idFromUrl && isReportPaid(idFromUrl)) {
+        setNotFound(true);
       } else {
-        // 如果没有结果，回退到输入页
         router.replace("/bazi");
       }
-    } catch {
-      router.replace("/bazi");
     }
   }, [router]);
 
@@ -45,6 +81,35 @@ export default function BaziResultPage() {
       savedAt: new Date().toISOString()
     });
     setSaved(true);
+  }
+
+  if (notFound) {
+    return (
+      <div className="mx-auto max-w-4xl px-4 py-20 text-center sm:px-6">
+        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full border border-brass-300/20">
+          <span className="text-3xl text-rice-100/50">?</span>
+        </div>
+        <h1 className="font-serif text-2xl text-rice-50">未找到原报告</h1>
+        <p className="mt-3 text-sm leading-7 text-rice-100/60">
+          该报告已支付成功，但数据在清理浏览器缓存后丢失。<br />
+          请返回历史记录查看（如果已保存），或重新进行八字排盘。
+        </p>
+        <div className="mt-6 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+          <Link
+            href="/history"
+            className="rounded-lg bg-gradient-to-r from-gold-400/80 to-brass-300/60 px-6 py-2.5 text-sm font-medium text-ink-950 hover:from-gold-400 hover:to-brass-300"
+          >
+            查看历史记录
+          </Link>
+          <Link
+            href="/bazi"
+            className="rounded-lg border border-brass-300/20 px-6 py-2.5 text-sm text-rice-100/70 hover:text-rice-50"
+          >
+            重新排盘
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   if (!result) {
@@ -179,7 +244,7 @@ export default function BaziResultPage() {
         </ReportSection>
 
         {/* 大运 */}
-        <ReportSection title="大运" tag="大运" locked>
+        <ReportSection title="大运" tag="大运" locked={!isPaid}>
           <div className="space-y-2">
             {daYun.records.map((r, i) => (
               <div key={i} className="flex items-center gap-3">
@@ -210,30 +275,34 @@ export default function BaziResultPage() {
         </ReportSection>
 
         {/* 流年 */}
-        <ReportSection title={`流年 ${currentLiuNian.year}年`} tag="流年" locked>
+        <ReportSection title={`流年 ${currentLiuNian.year}年`} tag="流年" locked={!isPaid}>
           <p>{currentLiuNian.detail}</p>
         </ReportSection>
 
         {/* 事业 */}
-        <ReportSection title="事业分析" tag="事业" locked price={9.9}>
+        <ReportSection title="事业分析" tag="事业" locked={!isPaid} price={9.9}>
           <p>{result.careerWealth}</p>
         </ReportSection>
 
         {/* 感情 */}
-        <ReportSection title="感情婚姻分析" tag="感情" locked price={9.9}>
+        <ReportSection title="感情婚姻分析" tag="感情" locked={!isPaid} price={9.9}>
           <p>{result.relationship}</p>
         </ReportSection>
 
         {/* 健康 */}
-        <ReportSection title="健康分析" tag="健康" locked price={9.9}>
+        <ReportSection title="健康分析" tag="健康" locked={!isPaid} price={9.9}>
           <p>{result.health}</p>
         </ReportSection>
       </div>
 
       {/* 付费解锁 */}
-      {showPaywall ? (
+      {isPaid ? (
+        <div className="mt-6 rounded-lg border border-jade-400/20 bg-jade-400/5 px-6 py-4 text-center">
+          <p className="text-sm text-jade-300">✓ 已解锁完整报告</p>
+        </div>
+      ) : showPaywall ? (
         <div className="mt-6">
-          <PaywallOverlay />
+          <PaywallOverlay reportId={result.id} />
         </div>
       ) : (
         <div className="mt-6 text-center">

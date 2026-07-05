@@ -9,6 +9,7 @@ type Props = {
   title?: string;
   features?: string[];
   productId?: ProductId;
+  reportId?: string;
 };
 
 export default function PaywallOverlay({
@@ -16,6 +17,7 @@ export default function PaywallOverlay({
   title = "解锁完整报告",
   features,
   productId = "bazi_report",
+  reportId,
 }: Props) {
   const [showPayment, setShowPayment] = useState(false);
 
@@ -55,6 +57,7 @@ export default function PaywallOverlay({
         isOpen={showPayment}
         onClose={() => setShowPayment(false)}
         productId={productId}
+        reportId={reportId}
         title={title}
         price={price}
       />

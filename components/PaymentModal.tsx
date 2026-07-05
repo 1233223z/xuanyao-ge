@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import type { ProductId } from "@/lib/payment";
+import { saveReportData } from "@/lib/payment";
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
   productId?: ProductId;
+  reportId?: string;
   title?: string;
   price?: number;
   description?: string;
@@ -16,6 +18,7 @@ export default function PaymentModal({
   isOpen,
   onClose,
   productId = "bazi_report",
+  reportId,
   title = "解锁完整报告",
   price = 9.9,
   description = "一次付费，永久查看",
@@ -26,14 +29,29 @@ export default function PaymentModal({
   if (!isOpen) return null;
 
   async function handlePay() {
+    if (!reportId) {
+      setError("缺少报告 ID，请重新进入报告页再试");
+      return;
+    }
+
     setProcessing(true);
     setError("");
+
+    // 支付前把当前报告数据持久化到 localStorage
+    try {
+      const raw = sessionStorage.getItem("baziResult") || sessionStorage.getItem("xuanyao-current-result");
+      if (raw) {
+        saveReportData(reportId, JSON.parse(raw));
+      }
+    } catch (e) {
+      console.error("保存报告数据失败:", e);
+    }
 
     try {
       const res = await fetch("/api/payment/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId }),
+        body: JSON.stringify({ productId, reportId }),
       });
 
       const data = await res.json();
@@ -43,7 +61,6 @@ export default function PaymentModal({
       }
 
       if (data.url) {
-        // 跳转到 Stripe Checkout 页面
         window.location.href = data.url;
       } else {
         throw new Error("未返回支付链接");
